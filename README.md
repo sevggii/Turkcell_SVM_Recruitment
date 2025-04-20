@@ -111,7 +111,7 @@ Modelin karar sınırları tecrübe ve puana göre matplotlib ile çizilmiştir.
 ## 👤 Hazırlayan
 
 💖 ChatGPT + Sevgi Targay  
-Bu proje bir öğrenci emeğidir, *(eser miktarda 🙂)* ChatGPT desteğiyle ve sevgiyle hazırlanmıştırr💖🤖
+Bu proje bir öğrenci emeğidir, *(eser miktarda 🙂)* ChatGPT desteğiyle koddan yoruma her satırı özenle ve sevgiyle hazırlanmıştırr💖🤖
 
 > README ise ChatGPT'nin nazik katkısıyla hazırlanmıştır:  
 > “ChatGPT, yapay zeka eğitiminin hakkını verelim!” dedi, belgelemeyi özenle tamamladı. 🤖
