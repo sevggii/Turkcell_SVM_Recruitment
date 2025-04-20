@@ -25,27 +25,24 @@ import matplotlib.pyplot as plt #grafik çizmek için
 
 
 #Görevler: Faker ya da random ile en az 200 başvuru verisi üret.
-#faker nesnesi oluşturulur
-fake = Faker('tr_TR')
-def generate_recruitment_data(n_samples=200):
 
+#faker nesnesi oluşturulur
+#fake = Faker('tr_TR')
+
+np.random.seed(42) #her seferinde aynı verileri kullanmak için seed komutu kulanılır
+#veri üretimi
+def generate_recruitment_data(n_samples=200):
     data = []
     for _ in range(n_samples):
-        tecrube_yili = fake.random_int(min=0, max=10)
-        teknik_puan = fake.random_int(min=0, max=100)
+        tecrube_yili = np.random.randint(0, 11)  #0-10 arası
+        teknik_puan = np.random.randint(0, 101)  # 0-100 arası
         
-
         #Tecrübe ve teknik puana göre yukarıdaki kuralla etiketle.
         if tecrube_yili < 2 and teknik_puan < 60:
             etiket = 1  #işe alınmadı
-
         else:
             etiket = 0  # işe alındı
-
         data.append([tecrube_yili, teknik_puan, etiket])
-
-
-    
     return pd.DataFrame(data, columns=['tecrube_yili', 'teknik_puan', 'etiket'])
 
 
@@ -80,19 +77,42 @@ print("Model eğitimi tamamlandı")
 #Karar sınırını matplotlib ile görselleştir.
 def plot_decision_boundary():
     plt.figure(figsize=(10, 6))
-    x_min, x_max = X_train_scaled[:, 0].min() - 1, X_train_scaled[:, 0].max() + 1
-    y_min, y_max = X_train_scaled[:, 1].min() - 1, X_train_scaled[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1),
-                         np.arange(y_min, y_max, 0.1))
     
-    Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+    #orijinal değerler üzerinden
+    x_min, x_max = X['tecrube_yili'].min() - 0.5, X['tecrube_yili'].max() + 0.5
+    y_min, y_max = X['teknik_puan'].min() - 5, X['teknik_puan'].max() + 5
+    
+
+    #grid gösterimi
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1),
+                        np.arange(y_min, y_max, 1))
+    
+    #grid ölçeklenmesi
+    grid_scaled = scaler.transform(np.c_[xx.ravel(), yy.ravel()])
+    
+    
+    # Tahmin yap
+    Z = model.predict(grid_scaled)
     Z = Z.reshape(xx.shape)
     
+    # Grafiği çiz
     plt.contourf(xx, yy, Z, alpha=0.4)
-    plt.scatter(X_train_scaled[:, 0], X_train_scaled[:, 1], c=y_train, alpha=0.8)
-    plt.xlabel('Tecrübe Yılı (Ölçeklenmiş)')
-    plt.ylabel('Teknik Puan (Ölçeklenmiş)')
+    
+    # Orijinal veri noktalarını çiz
+    plt.scatter(X['tecrube_yili'], X['teknik_puan'], c=y, alpha=0.8)
+    
+    plt.xlabel('Tecrübe Yılı')
+    plt.ylabel('Teknik Puan')
     plt.title('SVM Karar Sınırı')
+    
+    # Eksenleri düzenle
+    plt.xlim(0, 10)
+    plt.ylim(0, 100)
+    
+    # Kriter çizgilerini ekle
+    plt.axvline(x=2, color='r', linestyle='--', alpha=0.3)
+    plt.axhline(y=60, color='r', linestyle='--', alpha=0.3)
+    
     plt.show()
 
 print("\n5. Karar Sınırı Görselleştirmesi:")
