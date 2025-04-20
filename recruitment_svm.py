@@ -156,4 +156,62 @@ print("\nConfusion Matrix:")
 print(confusion_matrix(y_test, y_pred))
 
 print("\nClassification Report:")
-print(classification_report(y_test, y_pred)) 
+print(classification_report(y_test, y_pred))
+
+#Gelişim Alanları: Kernel değiştirerek doğrusal olmayan sınıfları da deneme
+print("\n8. Farklı Kernel'ların Karşılaştırması:")
+kernels = ['linear', 'rbf', 'poly', 'sigmoid']
+
+kernel_scores = {}
+
+
+
+plt.figure(figsize=(15, 10))
+for i, kernel in enumerate(kernels, 1):
+    print(f"\n{kernel.upper()} Kernel:")
+    
+    kernel_model = SVC(kernel=kernel, probability=True)
+    kernel_model.fit(X_train_scaled, y_train)
+    
+    y_pred_kernel = kernel_model.predict(X_test_scaled)
+    score = accuracy_score(y_test, y_pred_kernel)
+    kernel_scores[kernel] = score
+    print(f"Accuracy: {score:.4f}")
+    
+    plt.subplot(2, 2, i)
+
+
+    
+    x_min, x_max = X['tecrube_yili'].min() - 0.5, X['tecrube_yili'].max() + 0.5
+    y_min, y_max = X['teknik_puan'].min() - 5, X['teknik_puan'].max() + 5
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1),
+                        np.arange(y_min, y_max, 1))
+    
+    grid_scaled = scaler.transform(np.c_[xx.ravel(), yy.ravel()])
+    Z = kernel_model.predict(grid_scaled)
+    Z = Z.reshape(xx.shape)
+
+
+    
+    plt.contourf(xx, yy, Z, alpha=0.4)
+    plt.scatter(X['tecrube_yili'], X['teknik_puan'], c=y, alpha=0.8)
+    
+
+    plt.xlabel('Tecrübe Yılı')
+    plt.ylabel('Teknik Puan')
+    plt.title(f'Kernel: {kernel}\nAccuracy: {score:.4f}')
+    
+    plt.axvline(x=2, color='r', linestyle='--', alpha=0.3)
+    plt.axhline(y=60, color='r', linestyle='--', alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+
+
+#enn iyi kernelin bulunup yazdırılması
+best_kernel = max(kernel_scores, key=kernel_scores.get)
+print(f"\nEn iyi performans gösteren kernel: {best_kernel}")
+print("\nTüm kernel performansları:")
+for kernel, score in kernel_scores.items():
+    print(f"{kernel}: {score:.4f}") 
