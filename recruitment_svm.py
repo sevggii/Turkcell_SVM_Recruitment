@@ -24,35 +24,39 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import matplotlib.pyplot as plt #grafik çizmek için
 
 
-
+#Görevler: Faker ya da random ile en az 200 başvuru verisi üret.
 #faker nesnesi oluşturulur
 fake = Faker('tr_TR')
-#Görevler: Faker ya da random ile en az 200 başvuru verisi üret.
 def generate_recruitment_data(n_samples=200):
+
     data = []
-    
     for _ in range(n_samples):
         tecrube_yili = fake.random_int(min=0, max=10)
         teknik_puan = fake.random_int(min=0, max=100)
         
-        # 3. Etiketleme kriteri
+
+        #Tecrübe ve teknik puana göre yukarıdaki kuralla etiketle.
         if tecrube_yili < 2 and teknik_puan < 60:
-            etiket = 1  # İşe alınmadı
+            etiket = 1  #işe alınmadı
+
         else:
-            etiket = 0  # İşe alındı
-            
+            etiket = 0  # işe alındı
+
         data.append([tecrube_yili, teknik_puan, etiket])
+
+
     
     return pd.DataFrame(data, columns=['tecrube_yili', 'teknik_puan', 'etiket'])
 
-# 4. Veri setini oluştur
-print("\n1. Veri Üretimi:")
+
+
+#veri setini oluşturalım
 df = generate_recruitment_data()
 print(f"Üretilen veri sayısı: {len(df)}")
 print("\nVeri örneği:")
 print(df.head())
 
-# 5. Veriyi eğitim ve test setlerine ayır
+#Veriyi eğitim ve test olarak ayır.
 print("\n2. Veri Bölme:")
 X = df[['tecrube_yili', 'teknik_puan']]
 y = df['etiket']
@@ -60,20 +64,20 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 print(f"Eğitim seti boyutu: {len(X_train)}")
 print(f"Test seti boyutu: {len(X_test)}")
 
-# 6. Veriyi ölçekle
+#Veriyi StandardScaler ile ölçekle.
 print("\n3. Veri Ölçekleme:")
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 print("Ölçekleme tamamlandı")
 
-# 7. SVM modelini eğit
+#SVC(kernel='linear') ile modeli eğit.
 print("\n4. Model Eğitimi:")
 model = SVC(kernel='linear', probability=True)
 model.fit(X_train_scaled, y_train)
 print("Model eğitimi tamamlandı")
 
-# 8. Karar sınırını görselleştir
+#Karar sınırını matplotlib ile görselleştir.
 def plot_decision_boundary():
     plt.figure(figsize=(10, 6))
     x_min, x_max = X_train_scaled[:, 0].min() - 1, X_train_scaled[:, 0].max() + 1
@@ -94,7 +98,7 @@ def plot_decision_boundary():
 print("\n5. Karar Sınırı Görselleştirmesi:")
 plot_decision_boundary()
 
-# 9. Kullanıcıdan girdi alarak tahmin yap
+#Kullanıcıdan tecrübe ve teknik puan alarak tahmin yap.
 def predict_candidate():
     print("\n6. Aday Değerlendirme:")
     try:
@@ -105,7 +109,7 @@ def predict_candidate():
             print("Hata: Değerler aralık dışında!")
             return
         
-        # Veriyi ölçekle
+        #veri ölçekleme aşaması
         input_data = scaler.transform([[tecrube_yili, teknik_puan]])
         prediction = model.predict(input_data)[0]
         probability = model.predict_proba(input_data)[0]
@@ -118,7 +122,7 @@ def predict_candidate():
     except ValueError:
         print("Hata: Lütfen geçerli sayısal değerler girin!")
 
-# 10. Model performansını değerlendir
+#accuracy_score, confusion_matrix, classification_report ile başarıyı değerlendir.
 print("\n7. Model Performans Değerlendirmesi:")
 y_pred = model.predict(X_test_scaled)
 
