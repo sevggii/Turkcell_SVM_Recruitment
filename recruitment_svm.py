@@ -1,5 +1,5 @@
 '''
-Proje Başlığı: “İşe Alımda Aday Seçimi: SVM ile Başvuru Değerlendirme”
+Proje Başlığı: "İşe Alımda Aday Seçimi: SVM ile Başvuru Değerlendirme"
 Senaryo: Bir teknoloji firmasında insan kaynakları ekibindesiniz. Amacınız, yazılım geliştirici pozisyonu için başvuran adayların tecrübe yılı ve teknik sınav puanına göre işe alınıp alınmamasını tahmin eden bir model geliştirmek.
 
 Veri Özellikleri: Her başvuru için şu bilgiler vardır:
@@ -11,7 +11,7 @@ etiket:
 0: İşe alındı (başarılı aday)
 
 Etiketleme Kriteri (kural tabanlı):
-Tecrübesi 2 yıldan az ve sınav puanı 60’tan düşük olanlar işe alınmıyor.
+Tecrübesi 2 yıldan az ve sınav puanı 60'tan düşük olanlar işe alınmıyor.
 '''
 
 import numpy as np #sayılsal işlemlerde kullanılır
@@ -122,6 +122,9 @@ def predict_candidate():
     except ValueError:
         print("Hata: Lütfen geçerli sayısal değerler girin!")
 
+# Kullanıcıdan tahmin için girdi al
+predict_candidate()
+
 #accuracy_score, confusion_matrix, classification_report ile başarıyı değerlendir.
 print("\n7. Model Performans Değerlendirmesi:")
 y_pred = model.predict(X_test_scaled)
@@ -133,7 +136,4 @@ print("\nConfusion Matrix:")
 print(confusion_matrix(y_test, y_pred))
 
 print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
-
-# Kullanıcıdan tahmin için girdi al
-predict_candidate() 
+print(classification_report(y_test, y_pred)) 
