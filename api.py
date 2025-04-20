@@ -13,7 +13,7 @@ class Candidate(BaseModel):
 @app.post("/predict")
 async def predict_candidate(candidate: Candidate):
     try:
-        # Veriyi ölçekle
+        #veriyi ölçekleme kısmı
         input_data = scaler.transform([[candidate.tecrube_yili, candidate.teknik_puan]])
         prediction = model.predict(input_data)[0]
         probability = model.predict_proba(input_data)[0]
