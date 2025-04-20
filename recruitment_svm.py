@@ -22,6 +22,7 @@ from sklearn.preprocessing import StandardScaler # veri ölçekleme
 from sklearn.svm import SVC #svm modeli
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report #mdoel değerlendirmesi
 import matplotlib.pyplot as plt #grafik çizmek için
+from sklearn.model_selection import GridSearchCV #parametre optimizasyonu içinn (arge)
 
 
 #Görevler: Faker ya da random ile en az 200 başvuru verisi üret.
@@ -214,4 +215,71 @@ best_kernel = max(kernel_scores, key=kernel_scores.get)
 print(f"\nEn iyi performans gösteren kernel: {best_kernel}")
 print("\nTüm kernel performansları:")
 for kernel, score in kernel_scores.items():
-    print(f"{kernel}: {score:.4f}") 
+    print(f"{kernel}: {score:.4f}")
+
+
+#Parametre tuning (C, gamma) (AR-GE)
+print("\n9. Parametre Optimizasyonu (GridSearchCV):")
+
+# Test edilecek parametreler
+param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'gamma': ['scale', 'auto', 0.1, 1],
+    'kernel': ['rbf', 'linear']
+}
+
+# GridSearchCV nesnesi oluştur
+grid_search = GridSearchCV(
+    SVC(probability=True),
+    param_grid,
+    cv=5,
+    scoring='accuracy',
+    n_jobs=-1
+)
+
+# Grid search'ü çalıştır
+grid_search.fit(X_train_scaled, y_train)
+
+# En iyi parametreleri ve skoru yazdır
+print("\nEn iyi parametreler:")
+print(grid_search.best_params_)
+print(f"\nEn iyi cross-validation skoru: {grid_search.best_score_:.4f}")
+
+# En iyi model ile test seti üzerinde performans değerlendirmesi
+best_model = grid_search.best_estimator_
+y_pred_best = best_model.predict(X_test_scaled)
+
+print("\nEn iyi model test seti performansı:")
+print("\nAccuracy Score:")
+print(accuracy_score(y_test, y_pred_best))
+
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred_best))
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred_best))
+
+# En iyi model ile karar sınırını görselleştir
+print("\n10. En İyi Model Karar Sınırı:")
+plt.figure(figsize=(10, 6))
+
+x_min, x_max = X['tecrube_yili'].min() - 0.5, X['tecrube_yili'].max() + 0.5
+y_min, y_max = X['teknik_puan'].min() - 5, X['teknik_puan'].max() + 5
+xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1),
+                    np.arange(y_min, y_max, 1))
+
+grid_scaled = scaler.transform(np.c_[xx.ravel(), yy.ravel()])
+Z = best_model.predict(grid_scaled)
+Z = Z.reshape(xx.shape)
+
+plt.contourf(xx, yy, Z, alpha=0.4)
+plt.scatter(X['tecrube_yili'], X['teknik_puan'], c=y, alpha=0.8)
+
+plt.xlabel('Tecrübe Yılı')
+plt.ylabel('Teknik Puan')
+plt.title(f'En İyi Model Karar Sınırı\nParametreler: {grid_search.best_params_}')
+
+plt.axvline(x=2, color='r', linestyle='--', alpha=0.3)
+plt.axhline(y=60, color='r', linestyle='--', alpha=0.3)
+
+plt.show() 
