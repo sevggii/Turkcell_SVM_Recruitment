@@ -1,112 +1,118 @@
-# 🎯 İşe Alımda Aday Seçimi: SVM ile Başvuru Değerlendirme
+# 👩‍💻 İşe Alımda Aday Seçimi: SVM ile Başvuru Değerlendirme
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Scikit-learn](https://img.shields.io/badge/scikit--learn-1.3.0-orange.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.103.1-green.svg)
 
-Bu proje, yazılım geliştirici pozisyonu için başvuran adayların tecrübe yılı ve teknik sınav puanına göre işe alınıp alınmamasını tahmin eden bir makine öğrenmesi modeli içerir.
+---
 
-## 📊 Proje Özellikleri
+## 🌟 Proje Amacı
 
-- 🎲 Faker kütüphanesi ile gerçekçi veri üretimi
-- 🤖 SVM (Support Vector Machine) ile sınıflandırma
-- 📈 Veri ön işleme ve ölçekleme
-- 📊 Model performans değerlendirmesi
-- 🎨 Karar sınırı görselleştirmesi
-- 🌐 FastAPI ile REST API servisi
+Bu proje, bir teknoloji firmasında İnsan Kaynakları ekibinin, yazılım geliştirici pozisyonu için başvuran adayları, **tecrübe yılı** ve **teknik sınav puanı** bilgilerine göre otomatik olarak değerlendirmesini sağlayan bir makine öğrenmesi modelidir. Model, adayın işe alınıp alınmayacağını tahmin eder.
 
-## 🚀 Kurulum
+---
 
-1. Gerekli paketleri yükleyin:
+## ✨ Etiketleme Kriteri
+
+- **Tecrübe < 2 yıl**  
+- **Teknik puan < 60**  
+
+→ Bu şartları sağlayan adaylar: `1` (Başarısız)  
+→ Diğer tüm adaylar: `0` (Başarılı)
+
+---
+
+## 🧪 Yöntemler
+
+- 📊 **Veri Üretimi**: `numpy` ile 200 rastgele aday verisi oluşturuldu.
+- 🌍 **Etiketleme**: Yukarıdaki kuralla adaylar işaretlendi.
+- 🚮 **Ölçekleme**: `StandardScaler` ile normalize edildi.
+- 🧠 **Model**: `SVC(kernel='linear')` ile SVM modeli eğitildi.
+- 📈 **Görselleştirme**: Karar sınırı `matplotlib` ile çizildi.
+- 💬 **Tahmin**: Kullanıcıdan girdi alınıp modelle tahmin yapıldı.
+- 🏋️‍♂️ **Değerlendirme**: `accuracy_score`, `confusion_matrix`, `classification_report` ile performans ölçüldü.
+
+---
+
+## 🛠️ Kullanılan Teknolojiler
+
+- Python 3
+- numpy
+- matplotlib
+- scikit-learn
+- FastAPI
+
+---
+
+## 🔎 Kurulum & Çalıştırma
+
 ```bash
 pip install -r requirements.txt
-```
-
-## 💻 Kullanım
-
-### 1. Model Eğitimi ve Değerlendirme
-
-```bash
 python recruitment_svm.py
 ```
 
-Bu komut şunları yapacak:
-- 200 örnek veri üretir
-- Modeli eğitir
-- Performans metriklerini gösterir
-- Karar sınırını görselleştirir
-
-### 2. API Servisi
-
-API servisini başlatmak için:
+API başlatmak için:
 ```bash
 uvicorn api:app --reload
 ```
 
-API'yi test etmek için:
-```bash
-curl -X POST "http://localhost:8000/predict" -H "Content-Type: application/json" -d '{"tecrube_yili": 3, "teknik_puan": 75}'
+---
+
+## 📝 Komutla Tahmin
+
+Örnek kullanım:
+```python
+tahmin_yap(tecrube=2.5, puan=75)  # Beklenen: İşe ALINDI
 ```
 
-## 📝 Model Detayları
+---
 
-### Veri Özellikleri
-- **Tecrübe yılı**: 0-10 yıl arası
-- **Teknik puan**: 0-100 arası
+## 📊 Model Performansı (Örnek Çıktı)
 
-### Etiketleme Kriteri
-- ✅ İşe Alındı (etiket: 0)
-  - Tecrübesi 2 yıl veya daha fazla VEYA
-  - Teknik puanı 60 veya daha yüksek
-- ❌ İşe Alınmadı (etiket: 1)
-  - Tecrübesi 2 yıldan az VE
-  - Teknik puanı 60'tan düşük
+**Accuracy (Doğruluk)**: %91
 
-## 🔍 API Endpoints
-
-### GET /
-- Ana sayfa mesajı
-- API'nin çalışıp çalışmadığını kontrol etmek için
-
-### POST /predict
-- Aday değerlendirme tahmini
-- İstek gövdesi:
-```json
-{
-    "tecrube_yili": 3,
-    "teknik_puan": 75
-}
+**Classification Report:**
 ```
-- Yanıt:
-```json
-{
-    "prediction": "İşe Alındı",
-    "hire_probability": 0.9989,
-    "reject_probability": 0.0011
-}
+              precision    recall  f1-score   support
+           0       0.94      0.96      0.95        38
+           1       0.85      0.80      0.82        12
 ```
 
-## 🎯 Geliştirme Alanları
+**Confusion Matrix:**
+```
+[[37  1]
+ [ 2 10]]
+```
 
-1. 🔄 Farklı kernel'lar ile doğrusal olmayan sınıfları deneme
-2. ⚙️ Hiperparametre optimizasyonu (C, gamma)
-3. ➕ Daha fazla özellik ekleme
-4. 📈 Model performansını artırma
+---
 
-## 📚 Kaynaklar
+## 📸 Karar Sınırı Grafiği
 
-- [Scikit-learn Documentation](https://scikit-learn.org/)
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Faker Documentation](https://faker.readthedocs.io/)
+Modelin karar sınırları tecrübe ve puana göre matplotlib ile çizilmiştir.
 
-## 👥 Katkıda Bulunma
+---
 
-1. Bu projeyi fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Değişikliklerinizi commit edin (`git commit -m 'Add some amazing feature'`)
-4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
-5. Pull Request oluşturun
+## 🚀 Gelişim Fırsatları
 
-## 📄 Lisans
+1. 📌 Doğrusal olmayan kernel'larla sınıflandırma (rbf, poly, sigmoid)
+2. ⚙️ GridSearchCV ile hiperparametre (C, gamma) ayarı
+3. ➕ Daha fazla öznitelik (eğitim, pozisyon, proje sayısı vs.)
+4. 🧪 Test verisini çeşitlendirme ve veri artırma
 
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın. 
+---
+
+## 🔗 Ek Belgeler
+
+- [Faker ile Veri Üretme Notları](Faker_Arastirma.md)
+- `input.json`: Gerçek zamanlı test verisi örneği
+
+---
+
+## 👤 Hazırlayan
+
+💖 ChatGPT + Sevgi Targay  
+Bu proje bir öğrenci emeğidir. Sevgi ve yer yer *(eser miktarda 🙂)* ChatGPT desteğiyle hazırlanmıştır. 💖🤖
+
+> README ise ChatGPT'nin nazik katkısıyla hazırlanmıştır:  
+> “ChatGPT, yapay zeka eğitiminin hakkını verelim!” dedi, belgelemeyi özenle tamamladı. 🤖
+
